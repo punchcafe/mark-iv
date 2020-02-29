@@ -6,54 +6,15 @@
  by Scott Fitzgerald
  http://www.arduino.cc/en/Tutorial/Sweep
 */
+#include "lib/servo_handler.cpp"
 
 #include <Servo.h>
 
 Servo myservo;
 
-class ServoDriver {
-  // Add map of movements, so that each update is determined by where it's supposed to be going?
-  // Introduce update class
-  // Updateable Interface, what to do in the window. Have overarching 'updatate frame'
-  public:
-  Servo* servo;
-  int currentPos = 0;
-  // Delay for motor to move one degree
-  int degreeDelay = 15;
-  
-  ServoDriver(Servo* motor){
-    this->servo = motor;
-  }
-
-  ServoDriver(){}
-
-  void setServo(Servo* servo){
-    this->servo = servo;
-    }
-  
-  void moveTo(int dest){
-    if(dest == currentPos) return;
-    if(dest > currentPos){
-      int startPoint = currentPos*1;
-      for(int i = startPoint*1; i < dest; i += 1){
-        servo->write(i);
-        this->currentPos = i;
-        delay(degreeDelay);
-      }
-    } else {
-      int startPoint = currentPos*1;
-      for(int i = startPoint*1; i > dest; i-= 1){
-        servo->write(i);
-        this->currentPos = i;
-        delay(degreeDelay);
-      }
-    }
-  }
-  
-};
-
   // create servo object to control a servo
 ServoDriver driver;
+ServoCluster cluster;
 // twelve servo objects can be created on most boards
 
 int pos = 0;    // variable to store the servo position
@@ -61,6 +22,8 @@ int pos = 0;    // variable to store the servo position
 void setup() {
   myservo.attach(9);  // attaches the servo on pin 9 to the servo object
   driver.setServo(&myservo);
+  cluster.setServoDriver(&driver);
+
   //So and takes the referrence of the object
 }
 
@@ -78,8 +41,6 @@ void sweep(){
 }
 
 void loop() {
-  driver.moveTo(0);
-  delay(1000);
-  driver.moveTo(180);
-  delay(1000);
+  driver.setDestination(driver.getDestination() == 90 ? 0 : 90);
+  cluster.acctuate();
 }
