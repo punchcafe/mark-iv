@@ -11,36 +11,34 @@
 #include <Servo.h>
 
 Servo myservo;
+Servo myservo2;
 
   // create servo object to control a servo
-ServoDriver driver;
+ServoDriver driver1;
+ServoDriver driver2;
 ServoCluster cluster;
+ServoDriver* clusterArray;
 // twelve servo objects can be created on most boards
 
 int pos = 0;    // variable to store the servo position
 
 void setup() {
   myservo.attach(9);  // attaches the servo on pin 9 to the servo object
-  driver.setServo(&myservo);
-  cluster.setServoDriver(&driver);
+  myservo2.attach(10);
+  //driver.setServo(&myservo);
+  clusterArray = new ServoDriver[2]{0};
+  clusterArray[0].setServo(&myservo);
+  clusterArray[0].setDestination(90);
+  clusterArray[1].setServo(&myservo2);
+  clusterArray[1].setDestination(90);
+  cluster.setServoCluster(clusterArray);
 
   //So and takes the referrence of the object
 }
 
-void sweep(){
-    myservo.write(pos);  
-  for (pos = 0; pos <= 180; pos += 5) { // goes from 0 degrees to 180 degrees
-    // in steps of 1 degree
-    myservo.write(pos);              // tell servo to go to position in variable 'pos'
-    delay(75);                       // waits 15ms for the servo to reach the position
-  }
-  for (pos = 180; pos >= 0; pos -= 5) { // goes from 180 degrees to 0 degrees
-    myservo.write(pos);              // tell servo to go to position in variable 'pos'
-    delay(75);                       // waits 15ms for the servo to reach the position
-  }
-}
-
 void loop() {
-  driver.setDestination(driver.getDestination() == 90 ? 0 : 90);
+  for(int i=0; i < 2; i++){
+    clusterArray[i].setDestination(clusterArray[i].getDestination() == 45 ? 0 : 45);
+  }
   cluster.acctuate();
 }

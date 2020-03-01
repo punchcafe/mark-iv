@@ -7,6 +7,8 @@ class ServoDriver {
     int destination;
 
   public:
+    ServoDriver(){}
+    ServoDriver(int random){}
     void update(){
       if(currentPosition == destination){
         return;
